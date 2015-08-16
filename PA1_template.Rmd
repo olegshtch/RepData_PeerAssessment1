@@ -8,18 +8,55 @@ output:
 
 ## Loading and preprocessing the data
 
+Unpack and load data:
 
+```{r, echo=TRUE}
+unzip("activity.zip")
+data <- read.csv("activity.csv")
+```
+
+Transform data:
+
+```{r, echo=TRUE}
+data$date <- as.character(data$date)
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r, echo=TRUE}
+steps_per_date <- tapply(data$steps, data$date, sum, na.rm = T)
+smean <- mean(steps_per_date)
+smed <- median(steps_per_date)
+```
 
+Mean values is `r smean` and median values is `r smed`.
+
+```{r, echo=TRUE}
+hist(steps_per_date, xlab = "Steps taken per day")
+abline(v = smean, lwd = 2, col = "green")
+abline(v = smed, lwd = 2, col = "blue")
+```
 
 ## What is the average daily activity pattern?
 
+```{r, echo=TRUE}
+avg_steps_per_date <- tapply(data$steps, data$interval, mean, na.rm = T)
+max_avg_steps <- avg_steps_per_date[avg_steps_per_date == max(avg_steps_per_date)]
+max_int <- as.numeric(names(max_avg_steps))
+plot(x = row.names(avg_steps_per_date), y = avg_steps_per_date, type = "l", ylab = "Steps per interval", xlab = "Interval")
+abline(v = max_int, lwd = 2, col = "green")
+```
 
+Maximum average number of steps is at interval `r max_int` with the number of steps is `r max_avg_steps`.
 
 ## Imputing missing values
 
+```{r, echo=TRUE}
+num_of_na <- sum(is.na(data$steps))
+```
 
+Number of missing data is a `r num_of_na`.
+
+Use mean for current interval to fill data.
 
 ## Are there differences in activity patterns between weekdays and weekends?
